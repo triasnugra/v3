@@ -65,3 +65,41 @@ Sekarang tab Uji: tiga skor berdampingan, plus baris khusus untuk sampel yang ha
 Wolf, Double Deviation, dan lebar SL tidak kusentuh. Short Wolf 1D masih jadi setup terbaik di FLOKI, BTC-0712, dan SOL-0625, dan semuanya dinilai berbeda dari Eliz. Kalau v2 dan v2t sudah stabil, itu kandidat berikutnya, dan kuusulkan juga batas jarak entry untuk semua jenis setup, bukan hanya `tlb`.
 
 Jalankan uji dataset lalu uji pembanding acak (200 sampel butuh beberapa menit), dan tempel hasilnya.
+
+Hasil ini menjawab pertanyaan utamamu, dan jawabannya: **belum**. Versi baru belum mengalahkan v1.
+
+## Angka
+
+Dataset (18 dinilai):
+- v1: skor 50%, rata-rata 2,49R, tanpa trade terbaik 0,03R
+- v2 (tlb mati): skor 50%, rata-rata 1,20R, tanpa trade terbaik -0,15R
+- v2t (tlb aktif): skor 47%, rata-rata 1,28R, tanpa trade terbaik 0,08R
+
+Pembanding acak (200 sampel):
+- v1: rata-rata 0,28R, tanpa terbaik 0,14R
+- v2: rata-rata 0,10R, tanpa terbaik -0,05R
+- v2t: rata-rata 0,06R, tanpa terbaik -0,07R
+
+Pada 26 sampel yang setup-nya berbeda antar versi, v1 rata-rata 1,62R (median -0,13R), sedangkan v2 dan v2t sama-sama -0,6R sampai -0,7R dengan median -1R.
+
+## Yang bisa disimpulkan
+
+**1. v2 dan v2t sama-sama kalah dari v1 pada sampel yang berbeda.** Ini bagian terpentingnya. Versi baru membuang setup yang ternyata sebagian besar menang di v1 (misalnya setup Monday sweep yang dulu valid). Setup yang tersisa malah lebih sering kena SL. Jadi mematikan short Monday High yang "palsu" ternyata juga membuang long yang benar.
+
+**2. Perbaikan `tlb` tidak membuat `tlb` menguntungkan.** Di pembanding acak, setup `tlb` dari v2t selalu gagal atau tidak terisi di sampel yang kulihat (misalnya LTC, ALICE, SOL, ETH). Retest yang diperketat mengurangi kesalahan jarak, tapi tidak membuat pola ini sebuah edge. Karena itu `tlb` tetap mati.
+
+**3. Angka dataset tidak bisa membedakan versi.** Skor 47% sampai 50% sama dengan selisih satu atau dua poin dari 18 penilaian. Yang berbeda hanya kualitas simulasi, dan itu didominasi satu-dua trade besar (PHA +13R, ALICE, FET). Tanpa 18 sampel itu, rata-rata v1 juga turun.
+
+**4. Kelemahan penilaian dataset yang kelihatan jelas:** ETH-0717 dan BTC-0712 dinilai "beda" di semua versi, tapi itu karena engine memberi short di tempat Eliz diam atau bullish, dan itu memang perbedaan nyata. Sebaliknya BTC-0729 kini "sama" di semua versi, dan itu juga nyata.
+
+## Keputusan yang kusarankan
+
+Jangan pakai v2 atau v2t sebagai engine utama. Karena kita belum punya bukti bahwa salah satu versi baru lebih baik, versi lama (v1) tetap dipakai sebagai default. Perbaikan yang kulakukan (sapuan 48 jam, tengah range terhadap Monday, weekly) benar secara logika, tapi efeknya negatif pada pembanding acak. Artinya salah satu dari perubahan itu menghilangkan setup yang berguna, dan aku belum bisa memastikan yang mana.
+
+Langkah berikutnya yang paling masuk akal, kalau kamu mau lanjut:
+1. **Bedah satu per satu** tiga perubahan v2 (sapuan 48 jam, tengah terhadap Monday, weekly). Jalankan tiap perubahan sendiri dengan flag, lalu lihat mana yang membuang setup menang di v1. Ini butuh beberapa flag baru di engine.
+2. Setelah tahu penyebabnya, hanya pertahankan perubahan yang tidak merugikan pembanding acak.
+
+Atau kalau kamu ingin berhenti di sini, pakai v1 sebagai engine di situs, dan kita catat bahwa engine ini belum punya edge yang terbukti (rata-rata sekitar 0,1R di pembanding acak dengan dominasi trade besar, dan median -1R). Itu juga jawaban yang jujur.
+
+Mau aku lanjutkan dengan langkah 1, atau cukup kembalikan default ke v1?
