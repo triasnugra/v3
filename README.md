@@ -1,3 +1,93 @@
+Sudah selesai. Ketiga file jadi dan lolos pengecekan sebelum limit-mu habis, dan hasil deploy-mu membuktikannya jalan. Error "Failed to fetch" di MANIFEST memang diharapkan karena koin itu tidak ada di Binance, jadi bukan bug.
+
+Hasilnya cukup informatif. Beberapa angka di tab Uji terlihat lebih bagus dari kenyataannya, jadi ini pembacaanku.
+
+**Yang kuat**
+- **Level cocok.** 24 dari 29 level Eliz ditemukan engine. Beberapa nyaris persis dengan Monday High/Low:
+  - label 0,0256 di chart PHA-nya sama dengan Monday High engine (0,0256);
+  - garis biru ETH 1.714 vs Monday Low engine 1.709,7;
+  - garis BTC 28 Juli sekitar 63.550 dan 65.700 vs Monday Range engine 63.605 dan 65.744.
+
+  Ini mendukung definisi Monday Range di engine (seluruh hari Senin UTC). Catatannya, toleranku cukup longgar dan engine mengeluarkan banyak level, jadi sebagian cocok mungkin kebetulan.
+- **Data post bisa dipercaya.** Harga chart cocok dengan Binance di hampir semua post. Dua peringatan awal ternyata salah alarm: PHA benar mencapai 0,0767 pada 25 Sep (wick), dan tanggal "03 Okt" serta "29 Set" di chart hanya area kosong di kanan chart. Ada selisih jam sekitar satu jam di ALICE.
+- **Klaim angka Eliz terverifikasi 4 dari 6.** SOL 80, TURBO 12%, ALICE 30%, dan PHA 200% (dari dasar zona) tercapai. Yang meleset hanya PUMP (22,6% vs klaim 30%) dan FET (basisnya tidak jelas). Jadi aku mencabut kecurigaanku soal pembesar-besaran. Keanehan ROI kartu ALICE tetap ada, tapi gerakan harganya nyata.
+
+**Yang lemah**
+- **Arah setup.** Dari 8 post setup long Eliz, engine searah di 3 (XPL, PHA, TURBO), berlawanan di 4 (ALICE, SOL Agustus, LTC, SOL Juni), dan tidak melihat apa pun di 1 (PUMP). Dari 12 setup yang engine keluarkan, 9 berupa short yang dipasang di Monday High, Wolf bearish, atau Double Deviation.
+- **ALICE adalah kasus paling jelas.** Engine meng-short breakout yang nyata (harga naik 27 sampai 50%) dan langsung kena SL.
+- **Simulasi +2,67R menyesatkan.** Angka itu datang dari satu trade (PHA, +29,5R). Tanpa PHA, rata-ratanya sekitar -0,02R, dan pembanding acak -0,07R. Jadi belum ada bukti engine punya edge, dan belum ada bukti sebaliknya. Sampelnya terlalu kecil.
+- **Stop terlalu rapat.** 4 dari 11 trade kena SL dalam hitungan jam. XPL kena SL 1 jam setelah entry lalu harga naik 30%, mirip cerita Eliz sendiri soal SL yang tersapu BTC di SOL Juni.
+
+**Kelemahan penilaianku sendiri**
+
+Skor 47% tidak adil di tiga tempat:
+1. BTC-0729 kuhitung "dilewati", padahal engine menghasilkan long sweep-Monday-Low di 63.605. Itu persis rencana yang Eliz sebut "sempurna" pada 30 Juli.
+2. BTC-0827 kuhitung "beda" karena engine memasang short tunda di Monday High. Itu sebenarnya sejalan dengan "tunggu salah satu ekstrem".
+3. ETH-0717 kuhitung "sama" karena bias harian naik, padahal setup terbaik engine adalah short.
+
+**Usulan urutan perbaikan**
+1. Perbaiki penilaian dulu supaya angka sebelum dan sesudah revisi adil.
+2. Short Monday High baru dibuat setelah sweep benar-benar terjadi (sekarang muncul sebagai order tunda sebelum sweep). Jangan fade saat bias harian naik dan trendline sedang ditembus.
+3. Tambah frame 1W. Di FET, 2 dari 3 levelnya (0,6047 dan 0,2741) tidak terlihat oleh engine.
+4. Hitung "tengah range" terhadap Monday Range, bukan range 4H 21 hari. Di BTC 28 Juli harga hanya 0,3% di atas Monday Low tapi engine menyebutnya tengah range.
+5. Longgarkan SL terhadap wick, atau tambah aturan masuk ulang.
+
+Poin 2 sampai 5 masih dugaan dari output di atas. Aku cek kodenya dulu sebelum mengubah apa pun.
+
+Mau aku mulai dari poin 1 lalu 2, supaya revisi pertama langsung punya angka pembanding?
+
+_________________________________________________________________
+
+Aku baca ulang engine.mjs dulu karena aku perlu tahu persis bagaimana setup Monday High/Wolf/Double Deviation dibuat sebelum mengubah apa pun.
+
+Aku sudah paham di mana akar masalahnya di kode. Sebelum mengubah apa pun, aku lihat dulu bagian scan di index.html karena perubahan engine harus tetap kompatibel dengan pemindaian.
+
+Sebelum kamu deploy, aku hitung dulu angka v1 dengan penilaian yang adil, memakai data yang kamu tempel. Penilaiannya kupakai ulang dari fungsi grade yang sama.
+
+Skor v1 dengan penilaian yang adil adalah 50%, bukan 47%. Jadi kelemahan v1 itu nyata dan bukan artefak penilaianku. Sekarang tab Uji dibuat menampilkan v1 dan v2 berdampingan.
+
+Poin 1 dan 2 sudah jadi, plus tiga tambahan. Engine v2 belum diuji dengan data Binance asli, jadi belum ada bukti bahwa v2 lebih baik dari v1. Angka itu baru muncul setelah kamu menjalankannya.
+
+Poin 1: penilaian yang adil
+
+Aku memakai ulang data v1 yang kamu tempel dengan aturan baru. Hasilnya skor v1 jadi 50%, bukan 47%, jadi kelemahan v1 itu nyata dan bukan artefak penilaianku.
+
+Aturan barunya:
+
+Order tunda di ekstrem range tidak lagi dianggap bertentangan dengan Eliz yang “menunggu ekstrem” (BTC-0827 sekarang “sama”).
+Short aktif tepat di bawah harga saat Eliz bullish tetap dianggap “beda” (ETH-0717).
+BTC-0729 kuubah jadi setup long. Itu keputusan penilaianku sendiri, karena chart-nya menunjukkan sweep lalu pantulan dan post 30 Juli menyebutnya “rencana sempurna”. Datasetnya kutandai sebagai inferensi.
+Poin 2: akar masalah short palsu
+
+Di v1, “Sweep Monday High” menyala kalau harga pernah di atas Monday High kapan saja sepanjang minggu itu, bukan sapuan yang baru terjadi. Itulah asal short di SOL-0815, LTC, dan BTC-0827.
+
+v2 hanya menghitung sapuan dalam 48 jam terakhir. Di skenario uji, sapuan 68 jam lalu menyala di v1 dan mati di v2, sedangkan sapuan 16 jam lalu menyala di keduanya.
+
+Tambahan di engine v2
+Tengah range kini diukur terhadap Monday Range. Sebelumnya BTC 28 Juli disebut “tengah range” padahal harga hanya 0,3% di atas Monday Low.
+Breakout trendline adalah pola baru: dua close melewati garis, breakout masih baru, harga belum jauh dari garis. Ini muncul di 5 dari 21 post Eliz (ALICE, TURBO, FLOKI, FET, SOL) dan v1 tidak punya pola itu.
+Kotak S/R weekly dihitung dari pivot weekly yang dihormati berulang kali. Ini belum tampil di UI, hanya masuk ke penilaian level.
+Setup yang melawan struktur harian kini mendapat peringatan.
+Cara kamu mendapat angka pembanding
+Deploy empat file: engine.mjs, validate.mjs, eliz-dataset.json, dan index.html. engine.mjs juga berubah sekarang.
+Di tab Uji, jalankan uji dataset lalu uji pembanding acak. Pembanding acak sekarang 100 sampel dan menjalankan v1 dan v2 pada jam yang sama.
+Tab itu menampilkan skor, level, simulasi plan, dan baseline acak untuk v1 dan v2 berdampingan.
+Kolom baru median dan “tanpa trade terbaik” ada supaya satu trade besar seperti PHA +29R tidak menipu rata-rata.
+Tempel hasilnya ke chat ini.
+Yang sudah kuuji
+Mode legacy identik dengan v1 asli pada 60 dari 60 data sintetis (44 punya setup), jadi perbandingan adil.
+Sapuan basi vs baru, breakout trendline, tengah range terhadap Monday Range, dan level weekly semuanya berperilaku sesuai niat pada skenario buatan.
+Seluruh pipeline dua varian jalan tanpa crash dengan server Binance palsu. Itu hanya membuktikan alur kodenya, bukan kualitas hasilnya.
+Peringatan
+Angka ambangnya tebakan. Jendela 48 jam, batas “aktif” 0,5%, dan jarak breakout 2 ATR belum diuji pada data asli. Kalau hasilnya buruk, aku ubah dari angka itu.
+Perkiraan hasil nyata. Short palsu SOL-0815, LTC, dan SOL-0625 seharusnya hilang, tapi itu baru bisa jadi “tidak terdeteksi”, bukan otomatis jadi long yang benar. Mendapat setup long yang benar butuh pola baru.
+Yang sengaja tidak kuubah. Lebar SL, Wolf, dan Double Deviation tidak kusentuh. XPL kena SL satu jam setelah entry lalu naik 30%, tapi satu kasus tidak cukup untuk melonggarkan SL tanpa data.
+Sampel kecil. 18 entri dan 100 sampel acak tetap menghasilkan angka yang berisik. Selisih satu-dua poin antara v1 dan v2 belum berarti apa-apa.
+
+____________________________________________________________
+
+
+
 Hasil v2 sudah masuk, dan jujur saja: **v2 belum lebih baik dari v1**. Skornya turun dari 47% ke 44%, dan trade-nya sendiri juga memburuk di beberapa tempat. Ini bukan kesimpulan dari sampel kecil. Ada pola yang bisa dilacak ke kode.
 
 ## Yang berhasil
